@@ -1,0 +1,12 @@
+# Pinned to the versions used for the reported analysis.
+numpy==2.2.6
+scipy==1.15.3
+pandas==2.3.3
+scikit-learn==1.7.2
+scikit-survival==0.25.0
+lifelines==0.30.0
+statsmodels==0.14.6
+matplotlib==3.10.9
+pyarrow==24.0.0
+# Build-time (only needed if scikit-survival must be compiled from source):
+# Cython>=3.0.10  setuptools>=77  setuptools-scm>=8  ecos  osqp  joblib

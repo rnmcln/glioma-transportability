@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the associated article."
+title: "Glioma survival prediction: TCGA development and CGGA external validation"
+abstract: >-
+  Reproducible pipeline for a transportability study of overall-survival
+  prediction models in adult diffuse glioma, developed in TCGA and externally
+  validated in CGGA, with separate discrimination and calibration assessment and
+  a staged recalibration analysis.
+authors:
+  - family-names: "Lawson McLean"
+    given-names: "Aaron"
+    orcid: "https://orcid.org/0000-0001-5528-6905"
+  - family-names: "Neumeister"
+    given-names: "Anne"
+  - family-names: "Kahr"
+    given-names: "Julian"
+  - family-names: "Meier"
+    given-names: "Tom"
+  - family-names: "Andreas"
+    given-names: "Nico"
+  - family-names: "Senft"
+    given-names: "Christian"
+license: MIT
+date-released: "2026-06-27"
+keywords:
+  - glioma
+  - prognostic model
+  - external validation
+  - transportability
+  - calibration
+  - TCGA
+  - CGGA
