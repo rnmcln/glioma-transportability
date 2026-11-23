@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""12_figures_tables.py - figures and summary tables.
+"""14_figures_tables.py - figures and summary tables.
 
 Main figures
   1  Overall C of the reference and full models, its decomposition into
@@ -39,7 +39,7 @@ from src.utils import (CGGA_ALL_RELEASES, DAYS_PER_MONTH, GRID_DAYS, GRID_MONTHS
                        PRIMARY_GRID_IDX, PRIMARY_HORIZON_DAYS, get_logger, get_paths)
 from src.validation import calibration_table, smoothed_calibration  # noqa: E402
 
-log = get_logger("12_figures")
+log = get_logger("14_figures")
 PRIMARY = ["TCGA_internal", "mRNAseq_693", "mRNAseq_325"]
 
 
@@ -138,7 +138,7 @@ def fig_flow(paths):
     line([74, 91], [29, 29]); arrow(91, 29, 91, 16)
     line([142, 142], [40, 24]); line([100, 151], [24, 24])
     arrow(100, 24, 100, 16); arrow(151, 24, 151, 16)
-    return savefig(fig, paths.figures / "FigureS1")
+    return savefig(fig, paths.figures / "S_flow")
 
 
 # ----------------------------------------------------------------------------- Figure 2
@@ -201,7 +201,7 @@ def fig_discrimination(paths):
     a2.set_xticklabels(["\u22120.12", "\u22120.08", "\u22120.04", "0", "0.04"])
     a2.text(0.0, ypos["B:coxnet"], "reference", ha="center", va="center", fontsize=5.8, color=MUTED)
     panel_label(a2, "B", x=-0.04)
-    return savefig(fig, paths.figures / "FigureS4")
+    return savefig(fig, paths.figures / "S_models")
 
 
 # ----------------------------------------------------------------------------- Figure 3
@@ -263,7 +263,7 @@ def figS_love(paths):
                 ms=2.8, ls="", clip_on=False)
         ax.text(0.58, 0.08 - 0.045 * j, f"CGGA {rel}", transform=ax.transAxes, va="center", fontsize=5.6)
     ax.set_ylim(-0.8, top + 0.8)
-    return savefig(fig, paths.figures / "FigureS2")
+    return savefig(fig, paths.figures / "S_shift")
 
 
 def figS_missing(paths):
@@ -284,10 +284,10 @@ def figS_missing(paths):
     for s in ax.spines.values():
         s.set_visible(False)
     ax.tick_params(length=0)
-    return savefig(fig, paths.figures / "FigureS3")
+    return savefig(fig, paths.figures / "S_missing")
 
 
-def figS_calibration_all(paths, months=24, stem="FigureS5", keys=None):
+def figS_calibration_all(paths, months=24, stem="S_calib24", keys=None):
     keys = keys or MODEL_ORDER
     t = round(months * DAYS_PER_MONTH)
     gi = GRID_MONTHS.index(months)
@@ -358,7 +358,7 @@ def figS_km(paths):
         if j == 0:
             ax.text(-0.02, -0.33, "Number at risk", transform=ax.transAxes, fontsize=5.4, color=MUTED, ha="left")
     fig.subplots_adjust(bottom=0.40, wspace=0.08)
-    return savefig(fig, paths.figures / "FigureS10")
+    return savefig(fig, paths.figures / "S_km")
 
 
 
@@ -503,10 +503,9 @@ def fig_within(paths):
 
 
 def fig_transport(paths):
-    """Figure 3. Observed versus case-mix-expected C, and class-specific
-    predictor-outcome associations in TCGA and CGGA."""
+    """Figure 3. Observed versus case-mix-expected C, and a TCGA-trained
+    expression signature against random signatures in pooled CGGA."""
     bm = pd.read_csv(paths.tables / "casemix_benchmark.csv")
-    asc = pd.read_csv(paths.tables / "class_specific_associations.csv")
     fig = plt.figure(figsize=(DOUBLE_COL, 112 * MM))
     gs = fig.add_gridspec(2, 3, height_ratios=[1.0, 0.8], hspace=0.62, wspace=0.10,
                           left=0.21, right=0.97, top=0.93, bottom=0.08)
@@ -539,28 +538,34 @@ def fig_transport(paths):
             ax.set_xlabel("Harrell C-index: observed (markers) and expected if the model were correct (grey band, 95% range)")
         panel_label(ax, "A" if j == 0 else "", x=-1.05, y=1.03)
 
-    ax = fig.add_subplot(gs[1, :])
-    terms = [("glioblastoma_IDHwt", "age_per_10y", "Glioblastoma, IDH-wildtype: age, per 10 years"),
-             ("glioblastoma_IDHwt", "mgmt_methylated", "Glioblastoma, IDH-wildtype: MGMT methylated"),
-             ("astrocytoma_IDHmut", "age_per_10y", "Astrocytoma, IDH-mutant: age, per 10 years"),
-             ("astrocytoma_IDHmut", "grade_3_or_4", "Astrocytoma, IDH-mutant: grade 3 or 4 vs 2"),
-             ("oligodendroglioma_IDHmut_codel", "age_per_10y", "Oligodendroglioma: age, per 10 years"),
-             ("oligodendroglioma_IDHmut_codel", "grade_3_or_4", "Oligodendroglioma: grade 3 vs 2")]
-    for i, (cl, t, lab) in enumerate(terms):
-        for coh, off, st in [("TCGA", -0.15, COHORT_STYLE["TCGA_internal"]), ("CGGA pooled", 0.15, COHORT_STYLE["pooled_seq"])]:
-            r = asc[(asc.cohort == coh) & (asc.integrated_class == cl) & (asc.term == t)]
-            if r.empty:
-                continue
-            r = r.iloc[0]
-            _dot(ax, r.hr, r.lo, r.hi, i + off, st)
-    ax.set_xscale("log"); ax.axvline(1, color=MUTED, lw=0.5, ls=(0, (2, 2)))
-    ax.set_xlim(0.3, 10); ax.set_xticks([0.5, 1, 2, 4, 8]); ax.set_xticklabels(["0.5", "1", "2", "4", "8"])
-    ax.minorticks_off()
-    ax.set_yticks(range(len(terms))); ax.set_yticklabels([x[2] for x in terms], fontsize=5.8)
-    ax.set_ylim(len(terms) - 0.5, -0.6)
-    ax.spines["left"].set_visible(False); ax.tick_params(axis="y", length=0)
-    ax.set_xlabel("Hazard ratio within class (95% CI), Cox model fitted separately in each cohort")
-    panel_label(ax, "B", x=-0.235, y=1.02)
+    # Panel B: expression signature against 500 random 20-gene signatures (pooled CGGA)
+    nul = pd.read_csv(paths.tables / "expression_random_signatures.csv")
+    sg = pd.read_csv(paths.tables / "expression_signature_decomposition.csv")
+    sg = sg[sg.cohort == "CGGA"]
+    sub = gs[1, :].subgridspec(1, 2, wspace=0.12)
+    marks = [("signature", "trained signature", RED, "^"), ("class + age + grade", "class + age + grade", INK, "o"),
+             ("class + age + grade + signature", "class + age + grade + signature", BLUE, "s")]
+    for j, (col, met, xl) in enumerate([("c_all", "c_all", "Harrell C-index, all pairs"),
+                                        ("c_within", "c_within", "Harrell C-index, pairs within one class")]):
+        ax = fig.add_subplot(sub[0, j])
+        v = nul[col].to_numpy()
+        bins = np.linspace(0.50, 0.85, 71)
+        h, edges = np.histogram(v, bins=bins)
+        ax.bar(edges[:-1], h, width=np.diff(edges), align="edge", color=FAINT, lw=0)
+        top = h.max()
+        for k, (m, lab, colr, mk) in enumerate(marks):
+            r = sg[(sg.model == m) & (sg.metric == met)].iloc[0]
+            y = top * (1.25 + 0.17 * k)
+            ax.plot([r.lo, r.hi], [y, y], color=colr, lw=0.6)
+            ax.plot(r.point, y, marker=mk, color=colr, mfc=colr, ms=3.0, ls="")
+            if j == 1:
+                ax.text(0.86, y, lab, va="center", fontsize=5.6, color=colr, clip_on=False)
+        ax.set_xlim(0.50, 0.86); ax.set_ylim(0, top * 1.75)
+        ax.set_yticks([]); ax.spines["left"].set_visible(False)
+        ax.set_xlabel(xl)
+        if j == 0:
+            ax.text(0.505, top * 1.02, "500 random 20-gene\nsignatures (grey)", fontsize=5.6, color=MUTED, va="bottom")
+            panel_label(ax, "B", x=-0.05, y=1.02)
     _key_row(fig, [0.21, 0.965, 0.76, 0.025], cohorts=["TCGA_internal", "mRNAseq_693", "mRNAseq_325", "pooled_seq"],
              labels={"TCGA_internal": "TCGA", "mRNAseq_693": "CGGA mRNAseq_693", "mRNAseq_325": "CGGA mRNAseq_325",
                      "pooled_seq": "CGGA pooled"})
@@ -647,7 +652,7 @@ def figS_ladder(paths):
         ax.set_ylabel(ylabel); ax.tick_params(axis="x", length=0)
         panel_label(ax, "AB"[j], x=-0.15)
     _key_row(fig, [0.15, 0.97, 0.6, 0.03], cohorts=["mRNAseq_693", "mRNAseq_325"])
-    return savefig(fig, paths.figures / "FigureS8")
+    return savefig(fig, paths.figures / "S_ladder")
 
 
 def figS_penalty(paths):
@@ -673,7 +678,62 @@ def figS_penalty(paths):
     ax.set_xlabel("Elastic-net penalty (log scale; weaker penalty to the right)")
     ax.set_ylabel("Harrell C-index")
     ax.set_ylim(0.50, 0.82)
-    return savefig(fig, paths.figures / "FigureS9")
+    return savefig(fig, paths.figures / "S_penalty")
+
+def figS_assoc(paths):
+    asc = pd.read_csv(paths.tables / "class_specific_associations.csv")
+    fig, ax = plt.subplots(figsize=(DOUBLE_COL * 0.8, 60 * MM))
+    terms = [("glioblastoma_IDHwt", "age_per_10y", "Glioblastoma, IDH-wildtype: age, per 10 years"),
+             ("glioblastoma_IDHwt", "mgmt_methylated", "Glioblastoma, IDH-wildtype: MGMT methylated"),
+             ("astrocytoma_IDHmut", "age_per_10y", "Astrocytoma, IDH-mutant: age, per 10 years"),
+             ("astrocytoma_IDHmut", "grade_3_or_4", "Astrocytoma, IDH-mutant: grade 3 or 4 vs 2"),
+             ("oligodendroglioma_IDHmut_codel", "age_per_10y", "Oligodendroglioma: age, per 10 years"),
+             ("oligodendroglioma_IDHmut_codel", "grade_3_or_4", "Oligodendroglioma: grade 3 vs 2")]
+    for i, (cl, t, lab) in enumerate(terms):
+        for coh, off, st in [("TCGA", -0.15, COHORT_STYLE["TCGA_internal"]), ("CGGA pooled", 0.15, COHORT_STYLE["pooled_seq"])]:
+            r = asc[(asc.cohort == coh) & (asc.integrated_class == cl) & (asc.term == t)]
+            if r.empty:
+                continue
+            r = r.iloc[0]
+            _dot(ax, r.hr, r.lo, r.hi, i + off, st)
+    ax.set_xscale("log"); ax.axvline(1, color=MUTED, lw=0.5, ls=(0, (2, 2)))
+    ax.set_xlim(0.3, 10); ax.set_xticks([0.5, 1, 2, 4, 8]); ax.set_xticklabels(["0.5", "1", "2", "4", "8"])
+    ax.minorticks_off()
+    ax.set_yticks(range(len(terms))); ax.set_yticklabels([x[2] for x in terms], fontsize=5.8)
+    ax.set_ylim(len(terms) - 0.5, -0.6)
+    ax.spines["left"].set_visible(False); ax.tick_params(axis="y", length=0)
+    ax.set_xlabel("Hazard ratio within class (95% CI)")
+    _key_row(fig, [0.40, 0.98, 0.5, 0.03], cohorts=["TCGA_internal", "pooled_seq"],
+             labels={"TCGA_internal": "TCGA", "pooled_seq": "CGGA pooled"})
+    return savefig(fig, paths.figures / "S_assoc")
+
+
+def figS_dca(paths):
+    d = pd.read_csv(paths.tables / "dca_idhwt_12m.csv")
+    fig, axes = plt.subplots(1, 2, figsize=(DOUBLE_COL, 62 * MM), sharey=True, gridspec_kw=dict(wspace=0.08))
+    sty = {"treat all": (MUTED, (0, (2, 2))), "B:coxnet": (RED, "-"), "B:cox": (BLUE, "-"), "RAG:cox": (INK, "-"),
+           "RA:cox": (INK, (0, (1, 1)))}
+    lab = {"treat all": "treat all", "B:coxnet": "penalised Cox", "B:cox": "Cox", "RAG:cox": "class + age + grade",
+           "RA:cox": "class + age"}
+    for j, coh in enumerate(["TCGA_internal", "pooled_seq"]):
+        ax = axes[j]
+        for k, (c, ls) in sty.items():
+            dd = d[(d.cohort == coh) & (d.model == k)].sort_values("threshold")
+            ax.plot(dd.threshold, dd.net_benefit, color=c, ls=ls, lw=0.8)
+            if j == 1:
+                yy = dd.net_benefit.iloc[2]
+        ax.axhline(0, color=FAINT, lw=0.6)
+        ax.set_ylim(-0.05, 0.30); ax.set_xlim(0.2, 0.9)
+        ax.set_xlabel("Threshold probability of death within 12 months")
+        ax.text(0.02, 0.97, {"TCGA_internal": "TCGA, cross-validated", "pooled_seq": "CGGA pooled, frozen"}[coh] +
+                ", IDH-wildtype", transform=ax.transAxes, fontsize=6.0, va="top")
+        if j == 0:
+            ax.set_ylabel("Net benefit")
+    for i, (k, (c, ls)) in enumerate(sty.items()):
+        axes[1].plot([0.62, 0.68], [0.27 - 0.025 * i] * 2, color=c, ls=ls, lw=0.8)
+        axes[1].text(0.69, 0.27 - 0.025 * i, lab[k], fontsize=5.6, va="center", color=c)
+    return savefig(fig, paths.figures / "S_dca")
+
 
 
 def main() -> int:
@@ -681,10 +741,10 @@ def main() -> int:
     paths = get_paths()
     for f in [fig_decomposition, fig_within, fig_transport, fig_calibration_main,
               fig_flow, figS_love, figS_missing, fig_discrimination, figS_calibration_all, figS_ladder,
-              figS_penalty, figS_km]:
+              figS_penalty, figS_km, figS_assoc, figS_dca]:
         f(paths); log.info("wrote %s", f.__name__)
-    figS_calibration_all(paths, months=12, stem="FigureS6", keys=["B:coxnet", "B:stacked"])
-    figS_calibration_all(paths, months=36, stem="FigureS7", keys=["B:coxnet", "B:stacked"])
+    figS_calibration_all(paths, months=12, stem="S_calib12", keys=["B:coxnet", "B:stacked"])
+    figS_calibration_all(paths, months=36, stem="S_calib36", keys=["B:coxnet", "B:stacked"])
     log.info("figures complete")
     return 0
 

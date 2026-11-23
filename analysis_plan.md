@@ -101,6 +101,26 @@ tumours, IDH-wildtype tumours of grade 4 only).
 
 These analyses were added after the initial plan.
 
+## Further analyses (added in 2.2.0, scripts 12 and 13)
+
+* Differences in C between TCGA and pooled CGGA with independent bootstrap
+  intervals; propensity-based standardisation of discrimination; IPCW (Uno)
+  decomposition truncated at 36 months; inverse-variance and event-weighted
+  summaries of class-specific C.
+* Paired within-class differences between full and reference models.
+* Case-mix benchmark with bootstrap intervals for observed minus expected C,
+  and with the baseline hazard re-estimated in CGGA.
+* Treatment and MGMT within IDH-wildtype tumours (CGGA); Karnofsky
+  performance score (TCGA); calibration by treatment status.
+* Record linkage between CGGA releases on clinical fields.
+* Deaths required for a within-class C interval width of 0.10.
+* Decision curves for death within 12 months, IDH-wildtype tumours.
+* Alternative elastic-net penalty-selection rules.
+* Refined WHO 2021 classification in TCGA (TERT, +7/-10, EGFR, CDKN2A/B).
+* Expression signature (elastic-net Cox on 2000 genes) trained in TCGA
+  RNA-seq and applied to CGGA RSEM data, with a class-age-grade comparator
+  and 500 random 20-gene signatures.
+
 ## Version history
 
 * 1.0.0: initial pipeline.
@@ -115,3 +135,5 @@ These analyses were added after the initial plan.
   before the horizon (smaller subsets gave unstable spline fits); reference
   model with class, age and grade; script 11 with the interpretation checks
   listed above; figures reorganised around the decomposition (script 12).
+* 2.2.0: scripts 01b (copy-number and expression downloads), 12
+  (extensions) and 13 (expression signature); figure script renumbered 14.

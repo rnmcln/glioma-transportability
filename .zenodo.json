@@ -1,7 +1,7 @@
 {
-  "title": "glioma-transportability: external validation of TCGA-trained glioma survival models in CGGA (v2.1.0)",
+  "title": "glioma-transportability: external validation of TCGA-trained glioma survival models in CGGA (v2.2.0)",
   "upload_type": "software",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "license": "MIT",
   "description": "Analysis pipeline for developing overall-survival prediction models for adult diffuse glioma in The Cancer Genome Atlas (TCGA) and evaluating them unchanged in four releases of the Chinese Glioma Genome Atlas (CGGA). The code harmonises the public clinical annotation, trains Cox, penalised Cox, random survival forest, gradient-boosted and stacked models in TCGA, and evaluates discrimination and calibration in CGGA with paired bootstrap inference, a decomposition of the concordance index into pairs within and between molecular classes, subgroup analyses and a cross-validated recalibration ladder. Source data are downloaded from the cBioPortal DataHub and the CGGA portal and are not redistributed.",
   "creators": [
