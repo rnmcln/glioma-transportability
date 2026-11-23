@@ -1,84 +1,100 @@
-# Glioma survival prediction: TCGA development and CGGA external validation
+# Transportability of glioma survival models from TCGA to CGGA
 
-Reproducible code for a transportability study of overall-survival prediction
-models in adult diffuse glioma. Models are developed in TCGA and evaluated,
-frozen, in four CGGA releases, with separate assessment of discrimination and
-calibration and a staged recalibration analysis.
+Analysis code for a study that develops overall-survival prediction models for
+adult diffuse glioma in The Cancer Genome Atlas (TCGA) and evaluates them,
+unchanged, in four releases of the Chinese Glioma Genome Atlas (CGGA).
 
-This repository contains the analysis pipeline only. The manuscript and
-supplementary material are distributed separately.
+## Study summary
 
-## Summary of findings
+**Question.** When a glioma survival model trained in TCGA is validated in CGGA,
+how much of the transported discrimination is carried by the integrated
+molecular class (IDH, 1p/19q), how well do predicted survival probabilities
+transport, and does model complexity change the answer?
 
-- Patient ranking transports well from TCGA to CGGA (internal Harrell C ~0.79;
-  external C 0.745–0.799 across releases and model classes).
-- Absolute survival predictions are the less stable component; recalibration-in-
-  the-large corrects almost all of the average miscalibration.
-- Overall discrimination is largely subtype separation: within glioblastoma
-  IDH-wildtype the C-index falls to ~0.61.
-- A stacked ensemble does not exceed a penalised Cox model on external validation.
+**Data.** TCGA merged lower-grade glioma and glioblastoma cohort
+(`lgggbm_tcga_pub`, 1033 adults with primary tumours, 519 deaths). CGGA
+`mRNAseq_693` (397 included, 208 deaths) and `mRNAseq_325` (223, 141) as primary
+validation cohorts; `mRNA_array_301` and `WEseq_286` as sensitivity cohorts.
+Only clinical annotation and marker status are used.
+
+**Models.** Cox, penalised Cox (elastic net), random survival forest,
+gradient-boosted survival and a stacked ensemble, using age, sex, histology,
+WHO grade and IDH, 1p/19q and MGMT promoter status; reference Cox models with
+the integrated class alone and with age. All models are trained in TCGA only
+and applied to CGGA without refitting, retuning or recalibration.
+
+**Evaluation.** Harrell and Uno C, time-dependent AUC, integrated Brier score,
+calibration-in-the-large, calibration slope and integrated calibration index at
+12, 24 and 36 months; paired patient-level bootstrap (500 replicates);
+decomposition of the C-index into pairs within and between molecular classes;
+subgroups; a cross-validated recalibration ladder within CGGA.
+
+**Main results.**
+
+| | TCGA (cross-validated) | CGGA mRNAseq_693 | CGGA mRNAseq_325 |
+|---|---|---|---|
+| Harrell C, five model classes | 0.785 to 0.790 | 0.758 to 0.778 | 0.773 to 0.793 |
+| Harrell C, integrated class + age | 0.786 | 0.734 | 0.764 |
+| Share of comparable pairs between classes | 63% | 68% | 63% |
+| C within classes / between classes (penalised Cox) | 0.662 / 0.865 | 0.633 / 0.818 | 0.620 / 0.862 |
+| C within IDH-wildtype glioblastoma (penalised Cox) | 0.656 | 0.615 | 0.612 |
+| Calibration slope at 24 months, five model classes | 1.01 to 1.39 | 0.91 to 1.09 | 1.13 to 1.30 |
+| Calibration-in-the-large at 24 months | -0.040 to -0.019 | 0.019 to 0.046 | 0.000 to 0.036 |
+
+* External C differed from cross-validated C by -0.032 to +0.005. Most of the
+  discrimination reflects separation of molecular classes; within classes C was
+  0.62 to 0.66.
+* External calibration slopes were close to 1. Predicted 24-month survival was
+  slightly lower than observed, and re-estimating the baseline hazard in CGGA
+  removed this difference.
+* The flexible model classes did not improve on the Cox model. The elastic-net
+  model, tuned in a glioblastoma-dominated cohort, shrank grade and 1p/19q
+  effects and had external C about 0.02 lower than the Cox model.
+* The sensitivity releases share many patients with the primary releases
+  (WEseq_286: 130 of 169 included patients; mRNA_array_301: 68 of 246) and are
+  also analysed after removing shared identifiers.
 
 ## Repository layout
 
 ```
-src/         analysis modules (data I/O, harmonisation, preprocessing,
-             survival models, stacking, validation, calibration, updating,
-             cohort-shift diagnostics, plotting, utilities)
-scripts/     numbered pipeline stages 00–11 and run_all.py
-tests/       unit tests (harmonisation, metrics, no-leakage stacking, smoke)
-data_raw/    populated by the download scripts (not tracked)
-data_processed/  harmonised analytic tables (not tracked)
-outputs/     figures, tables, models, checksums (not tracked)
+src/        data loading, harmonisation, preprocessing, model classes, stacking,
+            performance measures, calibration and updating, covariate shift,
+            model registry, plotting
+scripts/    numbered pipeline stages 01-11 and run_all.py
+tests/      unit tests (harmonisation, metrics against scikit-survival,
+            no-leakage stacking, synthetic end-to-end run)
+data_raw/   source files, populated by scripts 01 and 02 (not tracked)
+data_processed/, outputs/   generated by the pipeline (not tracked)
 ```
 
-## Requirements
-
-Python 3.10+. Install dependencies:
+## Reproducing the analysis
 
 ```bash
-pip install -r requirements.txt
+python -m venv .venv && . .venv/bin/activate
+pip install -r requirements.txt      # scripts/00_install_sksurv.sh builds scikit-survival if no wheel exists
+python scripts/01_download_tcga.py   # cBioPortal DataHub, lgggbm_tcga_pub clinical files
+python scripts/02_import_cgga.py     # CGGA portal clinical files (or place them in data_raw/cgga/<release>/)
+python scripts/run_all.py            # stages 03-11
+python -m pytest                     # unit tests
 ```
 
-`scikit-survival` requires a C/C++ toolchain if no wheel is available for your
-platform; `scripts/00_install_sksurv.sh` builds it from source if needed.
-
-## Reproduce
-
-```bash
-# 1. Download public data
-python scripts/01_download_tcga.py      # TCGA lgggbm_tcga_pub (cBioPortal datahub)
-python scripts/02_import_cgga.py        # CGGA clinical releases (CGGA portal)
-
-# 2. Run the full pipeline (harmonise -> train -> validate -> figures)
-python scripts/run_all.py
-```
-
-`run_all.py` reruns the longer, checkpointed stages (stacked-ensemble training,
-internal cross-validation, external validation, updating) until they complete,
-so the pipeline tolerates a capped per-process wall-time. Individual stages can
-also be run in order (`scripts/03_harmonise.py` … `scripts/11_figures_tables.py`).
-
-Outputs are written to `outputs/figures` and `outputs/tables`. A machine-readable
-manifest of source files, sizes, SHA256 checksums and URLs is written to
-`outputs/checksums/data_manifest.json`.
-
-## Tests
-
-```bash
-pip install pytest
-pytest -q
-```
+The pipeline uses a fixed random seed (20240626). The download scripts record
+the source address, size and SHA-256 checksum of every file in
+`outputs/checksums/data_manifest.json`. Tables are written to `outputs/tables/`
+and figures to `outputs/figures/`. A full run takes about 20 minutes on two CPU
+cores.
 
 ## Data sources
 
-- TCGA `lgggbm_tcga_pub` — cBioPortal datahub (merged LGG/GBM cohort).
-- CGGA `mRNAseq_693`, `mRNAseq_325`, `mRNA_array_301`, `WEseq_286` —
-  https://www.cgga.org.cn.
+* TCGA `lgggbm_tcga_pub`: cBioPortal DataHub, https://github.com/cBioPortal/datahub
+  (Ceccarelli et al., Cell 2016).
+* CGGA clinical files dated 6 May 2020: http://www.cgga.org.cn (Zhao et al.,
+  Genomics Proteomics Bioinformatics 2021).
 
-All data are public and de-identified. This is a secondary analysis; no causal
-claims are made. The analysis plan is in `analysis_plan.md` and the variable
-schema in `data_dictionary.md`.
+Both resources are public and de-identified. Their terms of use apply to the
+source files, which are not redistributed here.
 
-## Licence
+## Licence and citation
 
-MIT (see `LICENSE`).
+Code is released under the MIT licence. Please cite the archived release (see
+`CITATION.cff`) and the associated article.

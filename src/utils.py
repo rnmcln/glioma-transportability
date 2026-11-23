@@ -28,6 +28,13 @@ PRIMARY_HORIZON_MONTHS = 24
 HORIZONS_DAYS = tuple(int(round(m * DAYS_PER_MONTH)) for m in HORIZONS_MONTHS)
 PRIMARY_HORIZON_DAYS = int(round(PRIMARY_HORIZON_MONTHS * DAYS_PER_MONTH))
 
+# Monthly prediction grid (1-36 months) used for the integrated Brier score and
+# for all stored survival predictions; landmark horizons are columns of it.
+GRID_MONTHS = tuple(range(1, 37))
+GRID_DAYS = tuple(float(round(m * DAYS_PER_MONTH)) for m in GRID_MONTHS)
+HORIZON_GRID_IDX = tuple(GRID_MONTHS.index(m) for m in HORIZONS_MONTHS)
+PRIMARY_GRID_IDX = GRID_MONTHS.index(PRIMARY_HORIZON_MONTHS)
+
 # CGGA external-validation releases used in the analysis.
 CGGA_PRIMARY_RELEASES = ("mRNAseq_693", "mRNAseq_325")
 CGGA_SENSITIVITY_RELEASES = ("mRNA_array_301", "WEseq_286")

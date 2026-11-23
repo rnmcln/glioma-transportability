@@ -1,32 +1,41 @@
 cff-version: 1.2.0
-message: "If you use this code, please cite the associated article."
-title: "Glioma survival prediction: TCGA development and CGGA external validation"
+message: "If you use this code, please cite it as below."
+title: "glioma-transportability: external validation of TCGA-trained glioma survival models in CGGA"
+version: 2.0.0
+date-released: "2026-11-23"
+license: MIT
+repository-code: "https://github.com/rnmcln/glioma-transportability"
 abstract: >-
-  Reproducible pipeline for a transportability study of overall-survival
-  prediction models in adult diffuse glioma, developed in TCGA and externally
-  validated in CGGA, with separate discrimination and calibration assessment and
-  a staged recalibration analysis.
+  Analysis pipeline for developing overall-survival prediction models for adult
+  diffuse glioma in TCGA and evaluating them unchanged in four CGGA releases,
+  with separate assessment of discrimination and calibration, decomposition of
+  the concordance index by molecular class, and a cross-validated recalibration
+  ladder.
 authors:
   - family-names: "Lawson McLean"
     given-names: "Aaron"
     orcid: "https://orcid.org/0000-0001-5528-6905"
+    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena"
   - family-names: "Neumeister"
     given-names: "Anne"
+    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena"
   - family-names: "Kahr"
     given-names: "Julian"
+    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena"
   - family-names: "Meier"
     given-names: "Tom"
+    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena"
   - family-names: "Andreas"
     given-names: "Nico"
+    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena"
   - family-names: "Senft"
     given-names: "Christian"
-license: MIT
-date-released: "2026-06-27"
+    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena"
 keywords:
   - glioma
   - prognostic model
   - external validation
-  - transportability
   - calibration
+  - survival analysis
   - TCGA
   - CGGA

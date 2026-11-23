@@ -136,3 +136,9 @@ class SurvivalModel:
         for i, fn in enumerate(surv_fns):
             out[i] = fn(np.clip(times, fn.x.min(), fn.x.max()))
         return out
+
+
+def predict_all(model, df: pd.DataFrame):
+    """Return (risk score, S(t) on GRID_DAYS) for a fitted model."""
+    from .utils import GRID_DAYS
+    return np.asarray(model.risk_score(df)).ravel(), model.survival_at(df, list(GRID_DAYS))

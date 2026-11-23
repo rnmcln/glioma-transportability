@@ -1,78 +1,50 @@
 #!/usr/bin/env python
-"""09_model_updating.py - evaluate the Stage 0-4 updating ladder on a CGGA release.
+"""09_model_updating.py - Stage 0-4 updating ladder in the primary CGGA releases.
 
-Stages 0-3 are run for every model; Stage 4 (full refit) is run for the base
-learners (a stacked refit per fold is omitted for cost and noted as such).
-Checkpointed per model. Run until 'updating complete'.
+Stages 0-3 are evaluated for every clinical-molecular model; Stage 4 (full refit
+in CGGA) for the four base learners. A per-fold refit of the complete stacked
+ensemble is not performed. Stage 1-4 predictions are held-out (5-fold CV).
 """
 from __future__ import annotations
 
-import argparse
 import pathlib
-import pickle
 import sys
-import time
 
+import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
+from src.registry import PRIMARY_KEYS, load_models  # noqa: E402
 from src.survival_models import MODEL_NAMES, SurvivalModel  # noqa: E402
 from src.updating import run_ladder  # noqa: E402
-from src.utils import get_logger, get_paths, set_global_seed  # noqa: E402
+from src.utils import CGGA_PRIMARY_RELEASES, get_logger, get_paths, set_global_seed  # noqa: E402
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 log = get_logger("09_updating")
-ALL_MODELS = MODEL_NAMES + ["stacked"]
-
-
-def _load_cohort(paths, release):
-    key = release.lower().replace("_", "")
-    df = pd.read_parquet(paths.data_processed / f"cgga_{key}_harmonised.parquet")
-    return df[df.included_primary_analysis].reset_index(drop=True)
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--cohort", required=True)
-    ap.add_argument("--feature-set", default="B_clinical_molecular")
-    ap.add_argument("--budget", type=float, default=36.0)
-    args = ap.parse_args()
     set_global_seed()
     paths = get_paths()
-    df = _load_cohort(paths, args.cohort)
-    fs = args.feature_set
-    mdir = paths.models / fs
-
-    partial = paths.data_processed / f"upd_{args.cohort}_{fs}_partial.pkl"
-    done = pickle.load(open(partial, "rb")) if partial.exists() else {}
-
-    t0 = time.time()
-    for name in ALL_MODELS:
-        if name in done:
-            continue
-        if time.time() - t0 > args.budget:
-            break
-        frozen = pickle.load(open(mdir / f"{name}.pkl", "rb"))
-        if name in MODEL_NAMES:
-            refit_fn = (lambda d, nm=name: SurvivalModel.fit(nm, d, fs))
-            do4 = True
-        else:
-            refit_fn, do4 = None, False  # stacked Stage 4 omitted (cost)
-        ladder = run_ladder(df, frozen, refit_fn=refit_fn, feature_set=fs, do_stage4=do4)
-        ladder.insert(0, "model", name)
-        done[name] = ladder
-        pickle.dump(done, open(partial, "wb"))
-        log.info("%s ladder done (%.1fs)\n%s", name, time.time() - t0,
-                 ladder[["stage", "harrell_c", "citl_primary", "cal_slope", "ibs"]].round(3).to_string(index=False))
-
-    if len(done) < len(ALL_MODELS):
-        log.info("checkpoint: %d/%d models; re-run", len(done), len(ALL_MODELS))
-        return 0
-
-    out = pd.concat([done[m] for m in ALL_MODELS], ignore_index=True)
-    out.insert(0, "cohort", args.cohort)
-    out.to_csv(paths.tables / f"table6_updating_{args.cohort}_{fs}.csv", index=False)
-    log.info("updating complete -> table6_updating_%s_%s.csv", args.cohort, fs)
+    from importlib import import_module
+    ext = import_module("08_external_validation")
+    models = load_models(paths, PRIMARY_KEYS)
+    rows, store = [], {}
+    for coh in CGGA_PRIMARY_RELEASES:
+        df = ext.load_cohort(paths, coh)
+        for key, m in models.items():
+            name = key.split(":")[1]
+            refit = (lambda d, nm=name: SurvivalModel.fit(nm, d, "B_clinical_molecular")) if name in MODEL_NAMES else None
+            lad, preds = run_ladder(df, m, refit_fn=refit, do_stage4=refit is not None)
+            lad.insert(0, "model", key); lad.insert(0, "cohort", coh)
+            rows.append(lad)
+            for s, p in preds.items():
+                store[f"{coh}|{key}|{s}"] = p
+            log.info("%s %s\n%s", coh, key, lad.drop(columns=["cohort", "model"]).round(3).to_string(index=False))
+    pd.concat(rows).to_csv(paths.tables / "updating_ladder.csv", index=False)
+    np.savez_compressed(paths.data_processed / "updating_predictions.npz", **store)
+    log.info("updating complete")
     return 0
 
 

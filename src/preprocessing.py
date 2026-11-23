@@ -42,6 +42,11 @@ FEATURE_SETS = {
     },
 }
 
+# Reference feature sets used to quantify how much discrimination is carried by
+# the integrated molecular class alone (Section 16 of the analysis plan, v2).
+FEATURE_SETS["R_class"] = {"numeric": [], "categorical": ["integrated_class_harmonised"]}
+FEATURE_SETS["R_class_age"] = {"numeric": ["age_years"], "categorical": ["integrated_class_harmonised"]}
+
 PRIMARY_FEATURE_SET = "B_clinical_molecular"
 
 

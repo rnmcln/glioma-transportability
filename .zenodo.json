@@ -1,0 +1,44 @@
+{
+  "title": "glioma-transportability: external validation of TCGA-trained glioma survival models in CGGA (v2.0.0)",
+  "upload_type": "software",
+  "version": "2.0.0",
+  "license": "MIT",
+  "description": "Analysis pipeline for developing overall-survival prediction models for adult diffuse glioma in The Cancer Genome Atlas (TCGA) and evaluating them unchanged in four releases of the Chinese Glioma Genome Atlas (CGGA). The code harmonises the public clinical annotation, trains Cox, penalised Cox, random survival forest, gradient-boosted and stacked models in TCGA, and evaluates discrimination and calibration in CGGA with paired bootstrap inference, a decomposition of the concordance index into pairs within and between molecular classes, subgroup analyses and a cross-validated recalibration ladder. Source data are downloaded from the cBioPortal DataHub and the CGGA portal and are not redistributed.",
+  "creators": [
+    {
+      "name": "Lawson McLean, Aaron",
+      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Germany",
+      "orcid": "0000-0001-5528-6905"
+    },
+    {
+      "name": "Neumeister, Anne",
+      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Germany"
+    },
+    {
+      "name": "Kahr, Julian",
+      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Germany"
+    },
+    {
+      "name": "Meier, Tom",
+      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Germany"
+    },
+    {
+      "name": "Andreas, Nico",
+      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Germany"
+    },
+    {
+      "name": "Senft, Christian",
+      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Germany"
+    }
+  ],
+  "keywords": [
+    "glioma",
+    "prognostic model",
+    "external validation",
+    "calibration",
+    "survival analysis",
+    "TCGA",
+    "CGGA"
+  ],
+  "access_right": "open"
+}

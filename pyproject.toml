@@ -1,6 +1,6 @@
 [project]
 name = "glioma-transportability"
-version = "1.0.0"
+version = "2.0.0"
 description = "Transportability of glioma survival prediction models across TCGA and CGGA"
 requires-python = ">=3.10"
 readme = "README.md"

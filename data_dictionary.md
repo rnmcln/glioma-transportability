@@ -34,9 +34,8 @@ source label. Overall survival time is expressed in days.
 
 Overall survival is measured from initial diagnosis. In TCGA the recorded
 `OS_MONTHS` is converted to days using 30.4375 days per month; in CGGA the
-recorded `OS` is already in days. Possible differences in the survival-clock
-origin between cohorts are treated as a limitation and examined in sensitivity
-analyses rather than assumed identical.
+recorded `OS` is already in days. The survival-clock origin is not documented
+identically in the two resources and is treated as a limitation.
 
 ## Integrated class
 

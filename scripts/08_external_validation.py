@@ -1,18 +1,16 @@
 #!/usr/bin/env python
-"""08_external_validation.py - frozen external validation on a CGGA release.
+"""08_external_validation.py - frozen external validation in each CGGA release.
 
-For each frozen TCGA-trained model, per-patient risk and survival predictions
-are computed once on the CGGA cohort, then a patient-clustered bootstrap gives
-confidence intervals for the metric panel. This is the primary analysis
-(Section 14): the models are never refitted or tuned on CGGA.
-
-Checkpointed per model. Run repeatedly until 'external validation complete'.
+Every TCGA-trained model is applied unchanged to each CGGA release. Per-patient
+risk scores and survival predictions are computed once; a patient-level
+bootstrap (500 replicates) evaluates all models on the same resamples, giving
+percentile intervals for each metric and paired intervals for differences
+between models. The two sensitivity releases are additionally evaluated after
+removing patients whose CGGA identifier also occurs in a primary release.
 """
 from __future__ import annotations
 
-import argparse
 import pathlib
-import pickle
 import sys
 import time
 
@@ -21,70 +19,59 @@ import pandas as pd
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
-from src.survival_models import MODEL_NAMES  # noqa: E402
-from src.utils import HORIZONS_DAYS, get_logger, get_paths, set_global_seed  # noqa: E402
-from src.validation import bootstrap_arrays, evaluate_arrays  # noqa: E402
+from src.registry import ALL_KEYS, comparison_pairs, load_models  # noqa: E402
+from src.survival_models import predict_all  # noqa: E402
+from src.utils import (CGGA_ALL_RELEASES, CGGA_PRIMARY_RELEASES, HORIZON_GRID_IDX,  # noqa: E402
+                       get_logger, get_paths, set_global_seed)
+from src.validation import bootstrap_panel  # noqa: E402
 
 log = get_logger("08_external")
-ALL_MODELS = MODEL_NAMES + ["stacked"]
+N_BOOT = 500
 
 
-def _load_cohort(paths, release):
+def load_cohort(paths, release):
     key = release.lower().replace("_", "")
     df = pd.read_parquet(paths.data_processed / f"cgga_{key}_harmonised.parquet")
     return df[df.included_primary_analysis].reset_index(drop=True)
 
 
+def cohorts(paths) -> dict:
+    out = {r: load_cohort(paths, r) for r in CGGA_ALL_RELEASES}
+    primary_ids = set(out["mRNAseq_693"].patient_id) | set(out["mRNAseq_325"].patient_id)
+    for r in ["mRNA_array_301", "WEseq_286"]:
+        d = out[r]
+        out[f"{r}_unique"] = d[~d.patient_id.isin(primary_ids)].reset_index(drop=True)
+    pooled = pd.concat([out["mRNAseq_693"], out["mRNAseq_325"]], ignore_index=True)
+    out["pooled_seq"] = pooled.drop_duplicates("patient_id").reset_index(drop=True)
+    return out
+
+
 def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--cohort", required=True, help="CGGA release key, e.g. mRNAseq_693")
-    ap.add_argument("--feature-set", default="B_clinical_molecular")
-    ap.add_argument("--n-boot", type=int, default=500)
-    ap.add_argument("--budget", type=float, default=38.0)
-    args = ap.parse_args()
     set_global_seed()
     paths = get_paths()
-
-    df = _load_cohort(paths, args.cohort)
-    event = df.os_event.to_numpy().astype(bool)
-    time_d = df.os_time_days.to_numpy().astype(float)
-    clusters = df.patient_id.to_numpy()
-    fs = args.feature_set
-    mdir = paths.models / fs
-
-    out_csv = paths.tables / f"table5_external_{args.cohort}_{fs}.csv"
-    partial = paths.data_processed / f"ext_{args.cohort}_{fs}_partial.pkl"
-    done = pickle.load(open(partial, "rb")) if partial.exists() else {}
-
-    t0 = time.time()
-    for name in ALL_MODELS:
-        if name in done:
-            continue
-        if time.time() - t0 > args.budget:
-            break
-        model = pickle.load(open(mdir / f"{name}.pkl", "rb"))
-        risk = model.risk_score(df)
-        surv = model.survival_at(df, list(HORIZONS_DAYS))
-        boot = bootstrap_arrays(event, time_d, risk, surv, clusters, n_boot=args.n_boot)
-        row = {"model": name, "n": len(df), "n_events": int(event.sum())}
-        for _, r in boot.iterrows():
-            row[r.metric] = r.point
-            row[f"{r.metric}_lo"] = r.lo
-            row[f"{r.metric}_hi"] = r.hi
-        done[name] = row
-        pickle.dump(done, open(partial, "wb"))
-        log.info("%s done (%.1fs): Harrell C=%.3f [%.3f,%.3f]  CITL24=%.3f",
-                 name, time.time() - t0, row["harrell_c"], row["harrell_c_lo"],
-                 row["harrell_c_hi"], row.get("citl_24m", float("nan")))
-
-    if len(done) < len(ALL_MODELS):
-        log.info("checkpoint: %d/%d models; re-run to continue", len(done), len(ALL_MODELS))
-        return 0
-
-    out = pd.DataFrame([done[m] for m in ALL_MODELS])
-    out.insert(0, "cohort", args.cohort)
-    out.to_csv(out_csv, index=False)
-    log.info("external validation complete -> %s", out_csv.name)
+    models = load_models(paths, ALL_KEYS)
+    sums, difs = [], []
+    allc = cohorts(paths)
+    for coh, df in allc.items():
+        t0 = time.time()
+        event = df.os_event.to_numpy().astype(bool)
+        time_d = df.os_time_days.to_numpy().astype(float)
+        raw = {k: predict_all(m, df) for k, m in models.items()}
+        np.savez_compressed(paths.data_processed / f"pred_{coh}.npz",
+                            **{f"{k}|risk": v[0] for k, v in raw.items()},
+                            **{f"{k}|surv": v[1] for k, v in raw.items()},
+                            patient_id=df.patient_id.to_numpy())
+        preds = {k: (v[0], v[1][:, list(HORIZON_GRID_IDX)], v[1]) for k, v in raw.items()}
+        s, d = bootstrap_panel(event, time_d, preds, n_boot=N_BOOT, pairs=comparison_pairs())
+        for x in (s, d):
+            x.insert(0, "cohort", coh); x.insert(1, "n", len(df)); x.insert(2, "n_events", int(event.sum()))
+        sums.append(s); difs.append(d)
+        c = s[(s.metric == "harrell_c") & (s.model.str.startswith("B:"))]
+        log.info("%s (n=%d, %d deaths; %.0fs): %s", coh, len(df), event.sum(), time.time() - t0,
+                 ", ".join(f"{r.model}={r.point:.3f}" for r in c.itertuples()))
+    pd.concat(sums).to_csv(paths.tables / "external_validation_metrics.csv", index=False)
+    pd.concat(difs).to_csv(paths.tables / "external_validation_differences.csv", index=False)
+    log.info("external validation complete")
     return 0
 
 

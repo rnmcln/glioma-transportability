@@ -14,8 +14,9 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 from src.calibration import Recalibrator  # noqa: E402
 from src.survival_models import SurvivalModel  # noqa: E402
-from src.utils import HORIZONS_DAYS  # noqa: E402
-from src.validation import evaluate_model  # noqa: E402
+from src.survival_models import predict_all  # noqa: E402
+from src.utils import HORIZON_GRID_IDX, HORIZONS_DAYS  # noqa: E402
+from src.validation import evaluate_arrays  # noqa: E402
 
 
 def _synth_cohort(n=240, seed=0):
@@ -45,10 +46,11 @@ def test_pipeline_runs_and_metrics_finite():
     train = _synth_cohort(seed=0)
     ext = _synth_cohort(seed=1)
     model = SurvivalModel.fit("coxnet", train, "B_clinical_molecular")
-    res = evaluate_model(model, ext, horizons_days=HORIZONS_DAYS)
-    assert np.isfinite(res.metrics["harrell_c"])
-    assert 0.4 < res.metrics["harrell_c"] <= 1.0
-    assert np.isfinite(res.metrics["ibs"])
+    risk, grid = predict_all(model, ext)
+    m = evaluate_arrays(ext.os_event, ext.os_time_days, risk, grid[:, list(HORIZON_GRID_IDX)], grid)
+    assert 0.4 < m["harrell_c"] <= 1.0
+    for k in ["ibs", "slope_24m", "ici_24m", "citl_24m"]:
+        assert np.isfinite(m[k]), k
 
 
 def test_recalibration_improves_or_holds_citl():
@@ -61,3 +63,17 @@ def test_recalibration_improves_or_holds_citl():
     surv = r.survival_at(pi, list(HORIZONS_DAYS))
     assert surv.shape == (len(ext), len(HORIZONS_DAYS))
     assert np.all((surv >= 0) & (surv <= 1))
+
+
+def test_recalibration_in_the_large_preserves_relative_hazards():
+    from src.calibration import Recalibrator, prognostic_index
+    train = _synth_cohort(seed=0)
+    ext = _synth_cohort(seed=4)
+    model = SurvivalModel.fit("cox", train, "B_clinical_molecular")
+    s24 = model.survival_at(ext, [730.0])[:, 0]
+    pi = prognostic_index(s24)
+    r = Recalibrator("in_large").fit(ext.os_event.to_numpy(), ext.os_time_days.to_numpy(), pi)
+    new = r.survival_at(pi, [730.0])[:, 0]
+    # log cumulative hazards shift by a constant: relative hazards unchanged
+    d = prognostic_index(new) - pi
+    assert np.ptp(d) < 1e-6
