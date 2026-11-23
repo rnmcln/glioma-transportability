@@ -6,50 +6,60 @@ unchanged, in four releases of the Chinese Glioma Genome Atlas (CGGA).
 
 ## Study summary
 
-**Question.** When a glioma survival model trained in TCGA is validated in CGGA,
-how much of the transported discrimination is carried by the integrated
-molecular class (IDH, 1p/19q), how well do predicted survival probabilities
-transport, and does model complexity change the answer?
+**Question.** When a glioma survival model trained in TCGA reaches a high
+concordance index in CGGA, how much of that discrimination reflects ranking of
+patients within the same integrated molecular class, rather than ordering of
+established classes? How do calibration and its repair behave within classes?
 
 **Data.** TCGA merged lower-grade glioma and glioblastoma cohort
 (`lgggbm_tcga_pub`, 1033 adults with primary tumours, 519 deaths). CGGA
 `mRNAseq_693` (397 included, 208 deaths) and `mRNAseq_325` (223, 141) as primary
-validation cohorts; `mRNA_array_301` and `WEseq_286` as sensitivity cohorts.
-Only clinical annotation and marker status are used.
+validation cohorts, analysed separately and pooled; `mRNA_array_301` and
+`WEseq_286` as sensitivity cohorts. Only clinical annotation and marker status
+are used.
 
-**Models.** Cox, penalised Cox (elastic net), random survival forest,
-gradient-boosted survival and a stacked ensemble, using age, sex, histology,
-WHO grade and IDH, 1p/19q and MGMT promoter status; reference Cox models with
-the integrated class alone and with age. All models are trained in TCGA only
-and applied to CGGA without refitting, retuning or recalibration.
+**Models.** Penalised Cox (elastic net, primary) and Cox, plus random survival
+forest, gradient-boosted survival and a stacked ensemble, using age, sex,
+histology, WHO grade and IDH, 1p/19q and MGMT promoter status. Reference Cox
+models with the integrated class alone, with age, and with age and grade. All
+models are trained in TCGA only and applied to CGGA without refitting, retuning
+or recalibration.
 
-**Evaluation.** Harrell and Uno C, time-dependent AUC, integrated Brier score,
-calibration-in-the-large, calibration slope and integrated calibration index at
-12, 24 and 36 months; paired patient-level bootstrap (500 replicates);
-decomposition of the C-index into pairs within and between molecular classes;
-subgroups; a cross-validated recalibration ladder within CGGA.
+**Evaluation.** Harrell C decomposed into comparable pairs within one class and
+pairs spanning two classes, with the share of pairs and the share of
+above-chance concordance attributable to each; C standardised to the TCGA
+class-pair composition; analyses with follow-up censored at 36 months and
+restricted to molecularly unambiguous diagnoses; within-class C; a case-mix
+benchmark of expected C; class-specific associations; calibration overall and
+within classes across a cross-validated updating ladder; Uno C, time-dependent
+AUC and integrated Brier score; paired patient-level bootstrap.
 
-**Main results.**
+**Main results** (penalised Cox unless stated).
 
-| | TCGA (cross-validated) | CGGA mRNAseq_693 | CGGA mRNAseq_325 |
-|---|---|---|---|
-| Harrell C, five model classes | 0.785 to 0.790 | 0.758 to 0.778 | 0.773 to 0.793 |
-| Harrell C, integrated class + age | 0.786 | 0.734 | 0.764 |
-| Share of comparable pairs between classes | 63% | 68% | 63% |
-| C within classes / between classes (penalised Cox) | 0.662 / 0.865 | 0.633 / 0.818 | 0.620 / 0.862 |
-| C within IDH-wildtype glioblastoma (penalised Cox) | 0.656 | 0.615 | 0.612 |
-| Calibration slope at 24 months, five model classes | 1.01 to 1.39 | 0.91 to 1.09 | 1.13 to 1.30 |
-| Calibration-in-the-large at 24 months | -0.040 to -0.019 | 0.019 to 0.046 | 0.000 to 0.036 |
+| | TCGA (cross-validated) | CGGA pooled (693 + 325) |
+|---|---|---|
+| Harrell C, penalised Cox / Cox | 0.790 / 0.788 | 0.765 / 0.781 |
+| Harrell C, class / class + age / class + age + grade | 0.696 / 0.786 / 0.790 | 0.695 / 0.745 / 0.775 |
+| Comparable pairs spanning two classes | 63% | 66% |
+| Above-chance concordance from pairs spanning two classes | 79% | 84% |
+| C across classes / within classes | 0.865 / 0.662 | 0.837 / 0.625 |
+| C standardised to the TCGA class-pair composition | 0.801 | 0.747 |
+| C within IDH-wildtype tumours / grade 4 only | 0.656 / 0.637 | 0.613 / 0.556 |
+| C within IDH-mutant astrocytoma | 0.713 | 0.661 |
 
-* External C differed from cross-validated C by -0.032 to +0.005. Most of the
-  discrimination reflects separation of molecular classes; within classes C was
-  0.62 to 0.66.
-* External calibration slopes were close to 1. Predicted 24-month survival was
-  slightly lower than observed, and re-estimating the baseline hazard in CGGA
-  removed this difference.
-* The flexible model classes did not improve on the Cox model. The elastic-net
-  model, tuned in a glioblastoma-dominated cohort, shrank grade and 1p/19q
-  effects and had external C about 0.02 lower than the Cox model.
+* Most of the external discrimination comes from ordering patients with
+  different molecular diagnoses; within classes C was about 0.63 in CGGA.
+* For the Cox model, within-class C in CGGA (0.633) was below the value
+  expected from its own predictions for this case mix (0.702, simulated range
+  0.671 to 0.723); C across classes was at the upper end of its expected range.
+* Pooled 24-month calibration-in-the-large was 0.045 and 0.031 in the two
+  releases, but survival was overestimated in IDH-wildtype glioblastoma and
+  underestimated in IDH-mutant tumours. Re-estimating the baseline hazard
+  corrected the pooled error only; class-specific baselines corrected class
+  averages but not within-class slopes.
+* The flexible model classes did not improve on the Cox model. Internal C of
+  the elastic net was nearly flat across penalties, whereas external C within
+  IDH-mutant tumours depended strongly on the penalty.
 * The sensitivity releases share many patients with the primary releases
   (WEseq_286: 130 of 169 included patients; mRNA_array_301: 68 of 246) and are
   also analysed after removing shared identifiers.
@@ -60,7 +70,7 @@ subgroups; a cross-validated recalibration ladder within CGGA.
 src/        data loading, harmonisation, preprocessing, model classes, stacking,
             performance measures, calibration and updating, covariate shift,
             model registry, plotting
-scripts/    numbered pipeline stages 01-11 and run_all.py
+scripts/    numbered pipeline stages 01-12 and run_all.py
 tests/      unit tests (harmonisation, metrics against scikit-survival,
             no-leakage stacking, synthetic end-to-end run)
 data_raw/   source files, populated by scripts 01 and 02 (not tracked)
@@ -74,14 +84,14 @@ python -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt      # scripts/00_install_sksurv.sh builds scikit-survival if no wheel exists
 python scripts/01_download_tcga.py   # cBioPortal DataHub, lgggbm_tcga_pub clinical files
 python scripts/02_import_cgga.py     # CGGA portal clinical files (or place them in data_raw/cgga/<release>/)
-python scripts/run_all.py            # stages 03-11
+python scripts/run_all.py            # stages 03-12
 python -m pytest                     # unit tests
 ```
 
 The pipeline uses a fixed random seed (20240626). The download scripts record
 the source address, size and SHA-256 checksum of every file in
 `outputs/checksums/data_manifest.json`. Tables are written to `outputs/tables/`
-and figures to `outputs/figures/`. A full run takes about 20 minutes on two CPU
+and figures to `outputs/figures/`. A full run takes about 40 minutes on two CPU
 cores.
 
 ## Data sources

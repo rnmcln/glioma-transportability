@@ -77,7 +77,29 @@ clinical versus clinical-molecular feature sets.
 
 Comparable pairs (Harrell definition) are classified as within-class or
 between-class according to the integrated molecular class, and the C-index is
-computed separately in each set of pairs.
+computed separately in each set of pairs. Version 2.1.0 adds, with 1000
+bootstrap replicates: the share of pairs between classes and the share of
+concordance above 0.5 contributed by these pairs; class-specific within-class
+C; a C-index standardised to the TCGA composition of comparable pairs across
+class cells (cells involving unknown IDH status excluded); the decomposition
+with follow-up censored at 36 months; and the decomposition restricted to
+molecularly unambiguous diagnoses (IDH known, 1p/19q known for IDH-mutant
+tumours, IDH-wildtype tumours of grade 4 only).
+
+## Interpretation checks (added in 2.1.0, script 11)
+
+* Reference model with integrated class, age and grade.
+* Case-mix benchmark: expected overall, within-class and between-class C if
+  each frozen model's predicted survival were correct for the patients and
+  censoring of each cohort (200 simulations).
+* Cox models within each class in TCGA and pooled CGGA (age, MGMT status,
+  grade).
+* Class-specific calibration-in-the-large and slope at each stage of the
+  updating ladder.
+* Elastic-net penalty path evaluated in TCGA and pooled CGGA.
+* Stability of bootstrap interval bounds (second seed; 2000 replicates).
+
+These analyses were added after the initial plan.
 
 ## Version history
 
@@ -89,3 +111,7 @@ computed separately in each set of pairs.
   integrated Brier score computed on a monthly grid; added ICI, paired bootstrap
   differences, reference models, within/between-class decomposition, subgroup
   intervals and analyses of shared CGGA identifiers.
+* 2.1.0: integrated calibration index and E50/E90 require at least 20 events
+  before the horizon (smaller subsets gave unstable spline fits); reference
+  model with class, age and grade; script 11 with the interpretation checks
+  listed above; figures reorganised around the decomposition (script 12).

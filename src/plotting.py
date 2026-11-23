@@ -31,13 +31,13 @@ COHORT_STYLE = {
     "pooled_seq": dict(color=BLUE, marker="D", mfc="white", label="CGGA pooled"),
 }
 MODEL_ORDER = ["B:cox", "B:coxnet", "B:rsf", "B:gbsa", "B:stacked"]
-REF_ORDER = ["R:cox", "RA:cox"]
+REF_ORDER = ["R:cox", "RA:cox", "RAG:cox"]
 MODEL_LABEL = {
     "B:cox": "Cox", "B:coxnet": "Penalised Cox", "B:rsf": "Random survival forest",
     "B:gbsa": "Gradient boosting", "B:stacked": "Stacked ensemble",
     "A:cox": "Cox", "A:coxnet": "Penalised Cox", "A:rsf": "Random survival forest",
     "A:gbsa": "Gradient boosting", "A:stacked": "Stacked ensemble",
-    "R:cox": "Integrated class only", "RA:cox": "Integrated class + age",
+    "R:cox": "Integrated class only", "RA:cox": "Integrated class + age", "RAG:cox": "Class + age + grade",
 }
 
 MM = 1 / 25.4

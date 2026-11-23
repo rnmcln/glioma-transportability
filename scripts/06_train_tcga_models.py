@@ -3,8 +3,8 @@
 
 Models (Cox, penalised Cox, random survival forest, gradient-boosted survival
 and the stacked ensemble) are trained on the TCGA primary-analysis cohort for
-the clinical (A) and clinical-molecular (B) feature sets. Two reference Cox
-models (integrated class only; integrated class plus age) are trained to
+the clinical (A) and clinical-molecular (B) feature sets. Three reference Cox
+models (integrated class; class plus age; class, age and grade) are trained to
 quantify the discrimination carried by the molecular class. CGGA is not read.
 """
 from __future__ import annotations
@@ -24,7 +24,7 @@ from src.utils import get_logger, get_paths, set_global_seed  # noqa: E402
 
 log = get_logger("06_train")
 FEATURE_SETS = ["B_clinical_molecular", "A_clinical"]
-REFERENCE_SETS = ["R_class", "R_class_age"]
+REFERENCE_SETS = ["R_class", "R_class_age", "R_class_age_grade"]
 
 
 def main() -> int:

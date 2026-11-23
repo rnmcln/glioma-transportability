@@ -31,7 +31,7 @@ from src.validation import bootstrap_panel  # noqa: E402
 
 log = get_logger("07_internal")
 N_SPLITS, N_REPEATS, N_BOOT = 5, 5, 500
-JOBS = [("B", m) for m in MODEL_NAMES] + [("A", m) for m in MODEL_NAMES] + [("R", "cox"), ("RA", "cox")]
+JOBS = [("B", m) for m in MODEL_NAMES] + [("A", m) for m in MODEL_NAMES] + [("R", "cox"), ("RA", "cox"), ("RAG", "cox")]
 
 
 def main() -> int:

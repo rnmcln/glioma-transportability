@@ -10,12 +10,13 @@ import pickle
 
 from .survival_models import MODEL_NAMES
 
-FS_CODE = {"B_clinical_molecular": "B", "A_clinical": "A", "R_class": "R", "R_class_age": "RA"}
+FS_CODE = {"B_clinical_molecular": "B", "A_clinical": "A", "R_class": "R", "R_class_age": "RA",
+           "R_class_age_grade": "RAG"}
 CODE_FS = {v: k for k, v in FS_CODE.items()}
 MAIN_MODELS = MODEL_NAMES + ["stacked"]
 PRIMARY_KEYS = [f"B:{m}" for m in MAIN_MODELS]
 CLINICAL_KEYS = [f"A:{m}" for m in MAIN_MODELS]
-REFERENCE_KEYS = ["R:cox", "RA:cox"]
+REFERENCE_KEYS = ["R:cox", "RA:cox", "RAG:cox"]
 ALL_KEYS = PRIMARY_KEYS + CLINICAL_KEYS + REFERENCE_KEYS
 BENCHMARK = "B:coxnet"
 
@@ -32,5 +33,7 @@ def comparison_pairs():
     """(model, reference) pairs for paired bootstrap differences."""
     pairs = [(k, BENCHMARK) for k in PRIMARY_KEYS if k != BENCHMARK]
     pairs += [(f"B:{m}", f"A:{m}") for m in MAIN_MODELS]
-    pairs += [(BENCHMARK, "R:cox"), (BENCHMARK, "RA:cox"), ("B:stacked", "B:cox")]
+    pairs += [(BENCHMARK, "R:cox"), ("B:stacked", "B:cox")]
+    pairs += [(k, "RA:cox") for k in PRIMARY_KEYS] + [(k, "RAG:cox") for k in PRIMARY_KEYS]
+    pairs += [("RAG:cox", "RA:cox"), ("RA:cox", "R:cox")]
     return pairs

@@ -46,6 +46,8 @@ FEATURE_SETS = {
 # the integrated molecular class alone (Section 16 of the analysis plan, v2).
 FEATURE_SETS["R_class"] = {"numeric": [], "categorical": ["integrated_class_harmonised"]}
 FEATURE_SETS["R_class_age"] = {"numeric": ["age_years"], "categorical": ["integrated_class_harmonised"]}
+FEATURE_SETS["R_class_age_grade"] = {"numeric": ["age_years"],
+                                     "categorical": ["integrated_class_harmonised", "grade_harmonised"]}
 
 PRIMARY_FEATURE_SET = "B_clinical_molecular"
 

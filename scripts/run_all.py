@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""run_all.py - reproduce the full analysis end to end (stages 03-11).
+"""run_all.py - reproduce the full analysis end to end (stages 03-12).
 
 Stages 01 and 02 download the public source files; run them first if
 data_raw/ is empty. Each stage is a separate process so that a failure stops
@@ -21,7 +21,8 @@ STAGES = [
     "08_external_validation.py",
     "09_model_updating.py",
     "10_subgroups_decomposition.py",
-    "11_figures_tables.py",
+    "11_interpretation_checks.py",
+    "12_figures_tables.py",
 ]
 
 
