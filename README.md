@@ -1,6 +1,6 @@
 # Discrimination within and across molecular groups in external validation of glioma survival models
 
-**TCGA-CDR reproducibility release v2.3.0.** TCGA-CDR analysis of discrimination within and across molecular groups in external validation in CGGA. Includes the analysis and figure code, manuscript figures, and aggregate supplementary tables. The TCGA development cohort comprises 1,032 adults.
+**TCGA-CDR reproducibility release v2.3.1.** TCGA-CDR analysis of discrimination within and across molecular groups in external validation in CGGA. Includes the analysis and figure code, manuscript figures, and aggregate supplementary tables. The TCGA development cohort comprises 1,032 adults.
 
 This release contains the code and aggregate results for the manuscript
 using overall survival from the [TCGA Pan-Cancer Clinical Data Resource

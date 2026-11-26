@@ -1,7 +1,7 @@
 {
   "title": "Discrimination within and across molecular groups in external validation of glioma survival models (analysis code and reproducibility materials)",
   "upload_type": "software",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "license": "MIT",
   "description": "TCGA-CDR analysis of discrimination within and across molecular groups in external validation in CGGA. Includes the analysis and figure code, manuscript figures, and aggregate supplementary tables. The TCGA development cohort comprises 1,032 adults.",
   "creators": [
@@ -16,14 +16,6 @@
     },
     {
       "name": "Kahr, Julian",
-      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Germany"
-    },
-    {
-      "name": "Meier, Tom",
-      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Germany"
-    },
-    {
-      "name": "Andreas, Nico",
       "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Germany"
     },
     {
@@ -43,7 +35,7 @@
   "access_right": "open",
   "related_identifiers": [
     {
-      "identifier": "https://github.com/rnmcln/glioma-transportability/tree/v2.3.0",
+      "identifier": "https://github.com/rnmcln/glioma-transportability/tree/v2.3.1",
       "relation": "isSupplementTo",
       "scheme": "url"
     }

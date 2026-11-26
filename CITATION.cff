@@ -1,10 +1,10 @@
 cff-version: 1.2.0
 message: "If you use this code, please cite it as below."
 title: "Discrimination within and across molecular groups in external validation of glioma survival models (analysis code and reproducibility materials)"
-version: 2.3.0
+version: 2.3.1
 date-released: "2026-11-26"
 license: MIT
-repository-code: "https://github.com/rnmcln/glioma-transportability/tree/v2.3.0"
+repository-code: "https://github.com/rnmcln/glioma-transportability/tree/v2.3.1"
 authors:
   - family-names: "Lawson McLean"
     given-names: "Aaron"
@@ -15,12 +15,6 @@ authors:
     affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena"
   - family-names: "Kahr"
     given-names: "Julian"
-    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena"
-  - family-names: "Meier"
-    given-names: "Tom"
-    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena"
-  - family-names: "Andreas"
-    given-names: "Nico"
     affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena"
   - family-names: "Senft"
     given-names: "Christian"
