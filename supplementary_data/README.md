@@ -1,0 +1,2 @@
+These aggregate CSVs correspond to the table index in 07_Supplementary_Material.docx. The endpoint audit is restricted to the current study and compares the legacy annotation with TCGA-CDR. Fitted-model tables use TCGA-CDR. Blank statistical cells indicate an inapplicable or unavailable quantity.
+TCGA combined expression-model rows are omitted owing to incomplete nesting. Internal stacking estimates are exploratory.

@@ -1,0 +1,13 @@
+cohort,model,reference,metric,difference,lo,hi
+TCGA,signature,class + age + grade,c_all,-0.01779916923033298,-0.036965899620612586,0.0005182779897983549
+TCGA,signature,class + age + grade,c_within,-0.05556078948608034,-0.1106466020299468,-0.005985931154770321
+TCGA,signature,class + age + grade,c_within_glioblastoma_IDHwt,-0.06190140431282676,-0.12504089206128816,-0.008738247483258724
+TCGA,signature,class + age + grade,c_within_astrocytoma_IDHmut,-0.024645618556701,-0.16951614465793596,0.09634197361819613
+CGGA,class + age + grade + signature,class + age + grade,c_all,0.009367507585241186,0.005176072722404954,0.01333415221906473
+CGGA,class + age + grade + signature,class + age + grade,c_within,0.012210126793460119,0.0023941968696336775,0.021535624980145333
+CGGA,class + age + grade + signature,class + age + grade,c_within_glioblastoma_IDHwt,0.009521470265271947,-0.002709012330331656,0.021968318294915325
+CGGA,class + age + grade + signature,class + age + grade,c_within_astrocytoma_IDHmut,0.017642546663257486,0.002465355550321319,0.030926729848363522
+CGGA,signature,class + age + grade,c_all,-0.004452129879131239,-0.026410068327187623,0.015781103690100325
+CGGA,signature,class + age + grade,c_within,-0.012043293293293345,-0.058331161655782775,0.029288287063426035
+CGGA,signature,class + age + grade,c_within_glioblastoma_IDHwt,-0.019664220077443173,-0.07612229706512778,0.036574311576982606
+CGGA,signature,class + age + grade,c_within_astrocytoma_IDHmut,0.005284241029574699,-0.06452688580856315,0.07802072256985185

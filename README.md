@@ -1,118 +1,61 @@
-# Transportability of glioma survival models from TCGA to CGGA
+# Discrimination within and across molecular groups in external validation of glioma survival models
 
-Analysis code for a study that develops overall-survival prediction models for
-adult diffuse glioma in The Cancer Genome Atlas (TCGA) and evaluates them,
-unchanged, in four releases of the Chinese Glioma Genome Atlas (CGGA).
+**TCGA-CDR reproducibility release v2.3.0.** TCGA-CDR analysis of discrimination within and across molecular groups in external validation in CGGA. Includes the analysis and figure code, manuscript figures, and aggregate supplementary tables. The TCGA development cohort comprises 1,032 adults.
 
-## Study summary
+This release contains the code and aggregate results for the manuscript
+using overall survival from the [TCGA Pan-Cancer Clinical Data Resource
+(TCGA-CDR)](https://gdc.cancer.gov/about-data/publications/PanCan-Clinical-2018).
+The original upstream source files are obtained separately under their
+respective terms of use.
 
-**Question.** When a glioma survival model trained in TCGA reaches a high
-concordance index in CGGA, how much of that discrimination reflects ranking of
-patients within the same integrated molecular class, rather than ordering of
-established classes? How do calibration and its repair behave within classes?
+- **supplementary_data/** contains the exact aggregate CSVs accompanying the manuscript.
+- **figures/** contains the manuscript and supplementary figures in PDF format.
+- **reproduction/** contains the endpoint preparer and staged runner.
+- **scripts/** and **src/** contain the model and evaluation code.
 
-**Data.** TCGA merged lower-grade glioma and glioblastoma cohort
-(`lgggbm_tcga_pub`, 1033 adults with primary tumours, 519 deaths). CGGA
-`mRNAseq_693` (397 included, 208 deaths) and `mRNAseq_325` (223, 141) as primary
-validation cohorts, analysed separately and pooled; `mRNA_array_301` and
-`WEseq_286` as sensitivity cohorts. Only clinical annotation and marker status
-are used.
+For the endpoint workbook, obtain **Supplemental Table S1** from [Liu et al.,
+Cell 2018](https://doi.org/10.1016/j.cell.2018.02.052). The preparer checks the
+workbook MD5 (a4591b2dcee39591f59e5e25a6ce75fa). Use its absolute path wherever
+/path/to/TCGA-CDR-SupplementalTableS1.xlsx appears below.
 
-**Models.** Penalised Cox (elastic net, primary) and Cox, plus random survival
-forest, gradient-boosted survival and a stacked ensemble, using age, sex,
-histology, WHO grade and IDH, 1p/19q and MGMT promoter status. Reference Cox
-models with the integrated class alone, with age, and with age and grade. All
-models are trained in TCGA only and applied to CGGA without refitting, retuning
-or recalibration.
+Generated intermediate outputs can include exploratory analyses and unfiltered
+rows. Use the versioned supplementary_data/ folder for the exact reported
+tables. Earlier annotations and analyses are documented at the historical
+[source revision](https://github.com/rnmcln/glioma-transportability/tree/3799112).
 
-**Evaluation.** Harrell C decomposed into comparable pairs within one class and
-pairs spanning two classes, with the share of pairs and the share of
-above-chance concordance attributable to each; C standardised to the TCGA
-class-pair composition; analyses with follow-up censored at 36 months and
-restricted to molecularly unambiguous diagnoses; within-class C; a case-mix
-benchmark of expected C; class-specific associations; calibration overall and
-within classes across a cross-validated updating ladder; Uno C, time-dependent
-AUC and integrated Brier score; paired patient-level bootstrap.
+The MIT licence applies to the software. Cite this version and the associated
+article. See CITATION.cff for the software citation.
 
-**Main results** (penalised Cox unless stated).
+## Reproduce the analysis
 
-| | TCGA (cross-validated) | CGGA pooled (693 + 325) |
-|---|---|---|
-| Harrell C, penalised Cox / Cox | 0.790 / 0.788 | 0.765 / 0.781 |
-| Harrell C, class / class + age / class + age + grade | 0.696 / 0.786 / 0.790 | 0.695 / 0.745 / 0.775 |
-| Comparable pairs spanning two classes | 63% | 66% |
-| Above-chance concordance from pairs spanning two classes | 79% | 84% |
-| C across classes / within classes | 0.865 / 0.662 | 0.837 / 0.625 |
-| C standardised to the TCGA class-pair composition | 0.801 | 0.747 |
-| C within IDH-wildtype tumours / grade 4 only | 0.656 / 0.637 | 0.613 / 0.556 |
-| C within IDH-mutant astrocytoma | 0.713 | 0.661 |
+Use separate source-preparation and analysis folders. From a clean copy of
+this release, copy the release into a sibling folder before downloading data.
+For example, run the following inside an extracted release folder. Keep the
+two working copies separate.
 
-* Most of the external discrimination comes from ordering patients with
-  different molecular diagnoses; within classes C was about 0.63 in CGGA.
-* For the Cox model, within-class C in CGGA (0.633) was below the value
-  expected from its own predictions for this case mix (0.702, simulated range
-  0.671 to 0.723); C across classes was at the upper end of its expected range.
-* Pooled 24-month calibration-in-the-large was 0.045 and 0.031 in the two
-  releases, but survival was overestimated in IDH-wildtype glioblastoma and
-  underestimated in IDH-mutant tumours. Re-estimating the baseline hazard
-  corrected the pooled error only; class-specific baselines corrected class
-  averages but not within-class slopes.
-* The flexible model classes did not improve on the Cox model. Internal C of
-  the elastic net was nearly flat across penalties, whereas external C within
-  IDH-mutant tumours depended strongly on the penalty.
-* Restricted to grade 4 IDH-wildtype tumours, within-class C was 0.637 in TCGA
-  and 0.556 in pooled CGGA. A class-age-grade reference model matched the
-  full models within each class.
-* An elastic-net expression signature trained in TCGA reached C 0.788 in
-  pooled CGGA (within classes 0.629; AUC 0.95 for IDH status) and added 0.006
-  to within-class C beyond class, age and grade; 500 random 20-gene signatures
-  reached a median C of 0.735.
-* The sensitivity releases share many patients with the primary releases
-  (WEseq_286: 130 of 169 included patients; mRNA_array_301: 68 of 246) and are
-  also analysed after removing shared identifiers.
+Python requirements are in requirements.txt. The endpoint preparation also
+requires R with arrow and openxlsx. The reported runs used R 4.3.1,
+arrow 20.0.0.2 and openxlsx 4.2.8.1. The Python versions from the
+macOS arm64 run are recorded under reproduction/.
 
-## Repository layout
-
-```
-src/        data loading, harmonisation, preprocessing, model classes, stacking,
-            performance measures, calibration and updating, covariate shift,
-            model registry, plotting
-scripts/    numbered pipeline stages 01-14 and run_all.py
-tests/      unit tests (harmonisation, metrics against scikit-survival,
-            no-leakage stacking, synthetic end-to-end run)
-data_raw/   source files, populated by scripts 01 and 02 (not tracked)
-data_processed/, outputs/   generated by the pipeline (not tracked)
+```sh
+cp -R . ../concordance-analysis
+python3 -m venv ../concordance-env
+. ../concordance-env/bin/activate
+python -m pip install -r requirements.txt
+python scripts/01_download_tcga.py
+python scripts/01b_download_molecular.py
+python scripts/02_import_cgga.py
+python scripts/03_harmonise.py
+Rscript reproduction/prepare_concordance.R /path/to/TCGA-CDR-SupplementalTableS1.xlsx data_processed ../concordance-analysis ../concordance-analysis/cdr_endpoint_counts.csv
+cp -R data_raw/. ../concordance-analysis/data_raw/
+python reproduction/run_staged.py concordance ../concordance-analysis
+python reproduction/export_cox.py ../concordance-analysis ../concordance-analysis/outputs/tables/cox_coefficients.csv
+python reproduction/release_sensitivity.py ../concordance-analysis ../concordance-analysis/outputs/tables/cgga_within_release.csv
+mkdir -p ../concordance-analysis/reviewed-figures
+python reproduction/redraw_a.py ../concordance-analysis ../concordance-analysis/reviewed-figures
 ```
 
-## Reproducing the analysis
-
-```bash
-python -m venv .venv && . .venv/bin/activate
-pip install -r requirements.txt      # scripts/00_install_sksurv.sh builds scikit-survival if no wheel exists
-python scripts/01_download_tcga.py   # cBioPortal DataHub, lgggbm_tcga_pub clinical files
-python scripts/01b_download_molecular.py  # TCGA copy number and RNA-seq, CGGA RSEM expression
-python scripts/02_import_cgga.py     # CGGA portal clinical files (or place them in data_raw/cgga/<release>/)
-python scripts/run_all.py            # stages 03-14
-python -m pytest                     # unit tests
-```
-
-The pipeline uses a fixed random seed (20240626). The download scripts record
-the source address, size and SHA-256 checksum of every file in
-`outputs/checksums/data_manifest.json`. Tables are written to `outputs/tables/`
-and figures to `outputs/figures/`. A full run takes about 90 minutes on two CPU
-cores.
-
-## Data sources
-
-* TCGA `lgggbm_tcga_pub`: cBioPortal DataHub, https://github.com/cBioPortal/datahub
-  (Ceccarelli et al., Cell 2016).
-* CGGA clinical files dated 6 May 2020: http://www.cgga.org.cn (Zhao et al.,
-  Genomics Proteomics Bioinformatics 2021).
-
-Both resources are public and de-identified. Their terms of use apply to the
-source files, which are not redistributed here.
-
-## Licence and citation
-
-Code is released under the MIT licence. Please cite the archived release (see
-`CITATION.cff`) and the associated article.
+See the source revision for details of the cBioPortal and CGGA inputs.
+The distributed expression tables omit internal rows for combined models
+whose resampling was incompletely nested.

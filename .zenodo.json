@@ -1,9 +1,9 @@
 {
-  "title": "glioma-transportability: external validation of TCGA-trained glioma survival models in CGGA (v2.2.0)",
+  "title": "Discrimination within and across molecular groups in external validation of glioma survival models (analysis code and reproducibility materials)",
   "upload_type": "software",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "license": "MIT",
-  "description": "Analysis pipeline for developing overall-survival prediction models for adult diffuse glioma in The Cancer Genome Atlas (TCGA) and evaluating them unchanged in four releases of the Chinese Glioma Genome Atlas (CGGA). The code harmonises the public clinical annotation, trains Cox, penalised Cox, random survival forest, gradient-boosted and stacked models in TCGA, and evaluates discrimination and calibration in CGGA with paired bootstrap inference, a decomposition of the concordance index into pairs within and between molecular classes, subgroup analyses and a cross-validated recalibration ladder. Source data are downloaded from the cBioPortal DataHub and the CGGA portal and are not redistributed.",
+  "description": "TCGA-CDR analysis of discrimination within and across molecular groups in external validation in CGGA. Includes the analysis and figure code, manuscript figures, and aggregate supplementary tables. The TCGA development cohort comprises 1,032 adults.",
   "creators": [
     {
       "name": "Lawson McLean, Aaron",
@@ -40,5 +40,12 @@
     "TCGA",
     "CGGA"
   ],
-  "access_right": "open"
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/rnmcln/glioma-transportability/tree/v2.3.0",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
 }

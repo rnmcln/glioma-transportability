@@ -1,0 +1,2 @@
+cohort,original_n,cdr_barcode_match,paired_n,cdr_zero,legacy_events,cdr_events,event_changed,legacy_censored_cdr_death,legacy_death_cdr_censored,horizon_state_changed,abs_time_diff_gt_2_days,abs_time_diff_gt_30_4375_days,median_abs_days
+Concordance,1033,1033,1032,0,519,588,69,69,0,134,275,271,1.034375

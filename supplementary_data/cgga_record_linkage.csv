@@ -1,0 +1,7 @@
+release_a,release_b,shared_identifiers,shared_identifiers_linked,candidate_pairs_different_identifiers,candidate_patients_a
+mRNAseq_693,mRNAseq_325,0,0,0,0
+mRNAseq_693,mRNA_array_301,5,5,0,0
+mRNAseq_693,WEseq_286,104,103,1,1
+mRNAseq_325,mRNA_array_301,63,63,2,2
+mRNAseq_325,WEseq_286,26,26,1,1
+mRNA_array_301,WEseq_286,3,3,0,0

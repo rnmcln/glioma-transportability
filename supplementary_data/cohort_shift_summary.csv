@@ -1,0 +1,5 @@
+cgga_release,separation_auc,stratum_overlap,molecular_pattern_overlap,max_abs_smd
+mRNAseq_693,0.627,0.952,0.932,0.523
+mRNAseq_325,0.596,0.982,0.991,0.529
+mRNA_array_301,0.876,0.984,0.801,2.246
+WEseq_286,0.838,1.0,0.941,1.14

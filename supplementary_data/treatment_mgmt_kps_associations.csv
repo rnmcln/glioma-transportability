@@ -1,0 +1,27 @@
+cohort,model,term,n,n_events,hr,lo,hi
+"CGGA pooled, IDH-wildtype, all grades",age + MGMT,age_per_10y,274,222,1.2284799602097907,1.1051002878830487,1.3656344398643043
+"CGGA pooled, IDH-wildtype, all grades",age + MGMT,mgmt_methylated,274,222,0.9114277123291122,0.6889220061190049,1.2057975611508964
+"CGGA pooled, IDH-wildtype, all grades",age + MGMT,mgmt_unknown,274,222,0.6534466105979474,0.40923995357567516,1.043379242840686
+"CGGA pooled, IDH-wildtype, all grades",age + MGMT + treatment,age_per_10y,259,208,1.2768014265198804,1.13767616511234,1.4329401746781125
+"CGGA pooled, IDH-wildtype, all grades",age + MGMT + treatment,mgmt_methylated,259,208,0.9263726153808871,0.6939103117401451,1.2367105777338416
+"CGGA pooled, IDH-wildtype, all grades",age + MGMT + treatment,mgmt_unknown,259,208,0.5692490720455916,0.33858999730584993,0.9570409894065954
+"CGGA pooled, IDH-wildtype, all grades",age + MGMT + treatment,radiotherapy,259,208,0.8338608733237415,0.5440564508161206,1.2780364151866979
+"CGGA pooled, IDH-wildtype, all grades",age + MGMT + treatment,chemotherapy,259,208,0.7750055321819593,0.5463539284367809,1.0993488719503954
+"CGGA pooled, IDH-wildtype, all grades","age + MGMT, chemotherapy recipients",age_per_10y,198,161,1.132000306415334,0.998682287506843,1.2831154710107238
+"CGGA pooled, IDH-wildtype, all grades","age + MGMT, chemotherapy recipients",mgmt_methylated,198,161,0.7855923450814812,0.5662175701537459,1.0899614656660055
+"CGGA pooled, IDH-wildtype, all grades","age + MGMT, chemotherapy recipients",mgmt_unknown,198,161,0.45169041181520153,0.24620043900314578,0.8286915691615784
+"CGGA pooled, IDH-wildtype, grade 4",age + MGMT,age_per_10y,177,156,1.1471566229814047,0.9974154283757778,1.3193783454834505
+"CGGA pooled, IDH-wildtype, grade 4",age + MGMT,mgmt_methylated,177,156,0.8539147436030952,0.6116290277299335,1.192177539462216
+"CGGA pooled, IDH-wildtype, grade 4",age + MGMT,mgmt_unknown,177,156,0.7306256659022898,0.3965490643072284,1.3461483375524737
+"CGGA pooled, IDH-wildtype, grade 4",age + MGMT + treatment,age_per_10y,169,148,1.1852416147901552,1.0223699544899787,1.3740600252001485
+"CGGA pooled, IDH-wildtype, grade 4",age + MGMT + treatment,mgmt_methylated,169,148,0.8077723811229262,0.5704538412767256,1.1438194863315467
+"CGGA pooled, IDH-wildtype, grade 4",age + MGMT + treatment,mgmt_unknown,169,148,0.6741310442402074,0.34284789208310873,1.3255227035149164
+"CGGA pooled, IDH-wildtype, grade 4",age + MGMT + treatment,radiotherapy,169,148,0.8146245457382089,0.4842259921288317,1.3704616466408608
+"CGGA pooled, IDH-wildtype, grade 4",age + MGMT + treatment,chemotherapy,169,148,0.3604029028850367,0.23397805972104507,0.5551385995884393
+"CGGA pooled, IDH-wildtype, grade 4","age + MGMT, chemotherapy recipients",age_per_10y,137,117,1.138206401454463,0.9680402270941916,1.338285100197456
+"CGGA pooled, IDH-wildtype, grade 4","age + MGMT, chemotherapy recipients",mgmt_methylated,137,117,0.717372710816114,0.4873286134007532,1.0560094196653722
+"CGGA pooled, IDH-wildtype, grade 4","age + MGMT, chemotherapy recipients",mgmt_unknown,137,117,0.5502869417152259,0.26241205160590814,1.1539703164131605
+"TCGA, IDH-wildtype grade 4, KPS recorded",age + KPS + MGMT,age_per_10y,324,265,1.2990596940395185,1.16566120683618,1.4477243291456758
+"TCGA, IDH-wildtype grade 4, KPS recorded",age + KPS + MGMT,kps_per_10,324,265,0.8163043383379002,0.7413822466152302,0.8987978547254144
+"TCGA, IDH-wildtype grade 4, KPS recorded",age + KPS + MGMT,mgmt_methylated,324,265,0.7423919990572481,0.5519610045215398,0.9985232212952627
+"TCGA, IDH-wildtype grade 4, KPS recorded",age + KPS + MGMT,mgmt_unknown,324,265,0.8268722943997119,0.6097265030775844,1.1213516023902348

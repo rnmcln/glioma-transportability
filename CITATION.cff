@@ -1,16 +1,10 @@
 cff-version: 1.2.0
 message: "If you use this code, please cite it as below."
-title: "glioma-transportability: external validation of TCGA-trained glioma survival models in CGGA"
-version: 2.2.0
-date-released: "2026-11-23"
+title: "Discrimination within and across molecular groups in external validation of glioma survival models (analysis code and reproducibility materials)"
+version: 2.3.0
+date-released: "2026-11-26"
 license: MIT
-repository-code: "https://github.com/rnmcln/glioma-transportability"
-abstract: >-
-  Analysis pipeline for developing overall-survival prediction models for adult
-  diffuse glioma in TCGA and evaluating them unchanged in four CGGA releases,
-  with separate assessment of discrimination and calibration, decomposition of
-  the concordance index by molecular class, and a cross-validated recalibration
-  ladder.
+repository-code: "https://github.com/rnmcln/glioma-transportability/tree/v2.3.0"
 authors:
   - family-names: "Lawson McLean"
     given-names: "Aaron"

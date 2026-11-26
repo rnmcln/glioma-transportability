@@ -1,0 +1,7 @@
+release_a,release_b,shared_ids_all,shared_ids_included
+mRNAseq_693,mRNAseq_325,0,0
+mRNAseq_693,mRNA_array_301,14,5
+mRNAseq_693,WEseq_286,185,104
+mRNAseq_325,mRNA_array_301,84,63
+mRNAseq_325,WEseq_286,46,26
+mRNA_array_301,WEseq_286,5,3

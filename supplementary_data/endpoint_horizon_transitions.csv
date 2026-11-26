@@ -1,0 +1,10 @@
+cohort,legacy,CDR,Freq
+Concordance,censored_before_24m,censored_before_24m,270
+Concordance,death_by_24m,censored_before_24m,0
+Concordance,observed_alive_at_24m,censored_before_24m,0
+Concordance,censored_before_24m,death_by_24m,36
+Concordance,death_by_24m,death_by_24m,407
+Concordance,observed_alive_at_24m,death_by_24m,0
+Concordance,censored_before_24m,observed_alive_at_24m,98
+Concordance,death_by_24m,observed_alive_at_24m,0
+Concordance,observed_alive_at_24m,observed_alive_at_24m,221

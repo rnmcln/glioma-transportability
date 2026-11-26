@@ -1,0 +1,16 @@
+cohort,category,n
+TCGA,missing_age_or_survival,77
+TCGA,age_under_18,7
+TCGA,survival_time_nonpositive,6
+mRNAseq_693,recurrent_or_secondary,271
+mRNAseq_693,missing_age_or_survival,19
+mRNAseq_693,age_under_18,6
+mRNAseq_325,recurrent_or_secondary,92
+mRNAseq_325,missing_age_or_survival,7
+mRNAseq_325,age_under_18,3
+mRNA_array_301,recurrent_or_secondary,34
+mRNA_array_301,missing_age_or_survival,16
+mRNA_array_301,age_under_18,5
+WEseq_286,recurrent_or_secondary,106
+WEseq_286,missing_age_or_survival,10
+WEseq_286,age_under_18,1

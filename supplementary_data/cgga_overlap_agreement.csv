@@ -1,0 +1,6 @@
+release_a,release_b,n,age_equal,os_time_equal,os_event_equal,idh_equal
+mRNAseq_693,mRNA_array_301,14,13,13,13,14
+mRNAseq_693,WEseq_286,185,185,174,178,184
+mRNAseq_325,mRNA_array_301,84,84,82,83,83
+mRNAseq_325,WEseq_286,46,46,43,43,46
+mRNA_array_301,WEseq_286,5,5,4,4,5

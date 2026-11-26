@@ -1,0 +1,7 @@
+cohort,group,events_for_width_0_10,observed_c
+TCGA_internal,astrocytoma_IDHmut,166.80458273110645,0.6938637552293321
+TCGA_internal,glioblastoma_IDHwt_all,146.59755874189585,0.6520940129354083
+TCGA_internal,glioblastoma_IDHwt_grade4,154.64915707729872,0.6308159786676492
+pooled_seq,astrocytoma_IDHmut,126.94216082833182,0.6833987915633579
+pooled_seq,glioblastoma_IDHwt_all,149.1419390637459,0.6154996453883603
+pooled_seq,glioblastoma_IDHwt_grade4,163.60975289959453,0.5546532696539186
